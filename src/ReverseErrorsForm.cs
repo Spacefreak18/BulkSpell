@@ -24,7 +24,7 @@ namespace BulkSpell
         {
             
             dt = new DataTable();
-            dt.Columns.AddRange(new DataColumn[2] { new DataColumn("Word"), new DataColumn("Files") });
+            dt.Columns.AddRange(new DataColumn[3] { new DataColumn("Word"), new DataColumn("Occurances"), new DataColumn("Files") });
 
             foreach (KeyValuePair<string, List<string>> element in WrongWords)
             {
@@ -36,30 +36,17 @@ namespace BulkSpell
                 }
                 files = files.Remove(files.Length - 2);
 
-                dt.Rows.Add(element.Key, files);
+                dt.Rows.Add(element.Key, element.Value.Count, files);
             }
             dataGridView1.DataSource = dt;
-            dataGridView1.Columns[1].Width = 200;
+            dataGridView1.Columns[2].Width = 200;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             saveFileDialog1.ShowDialog();
 
-            using (System.IO.StreamWriter sw = System.IO.File.CreateText(saveFileDialog1.FileName))
-            {
-                foreach (DataRow row in dt.Rows)
-                {
-                    bool firstCol = true;
-                    foreach (DataColumn col in dt.Columns)
-                    {
-                        if (!firstCol) sw.Write("|");
-                        sw.Write(row[col].ToString());
-                        firstCol = false;
-                    }
-                    sw.WriteLine();
-                }
-            }
+            Util.SaveDataTableToPipeDelimitedTextFile(saveFileDialog1.FileName, dt);
         }
     }
 }

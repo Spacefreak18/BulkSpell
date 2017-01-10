@@ -15,10 +15,13 @@ namespace BulkSpell
 {
     public partial class MainForm : Form
     {
+        private NetSpell.SpellChecker.Dictionary.WordDictionary dict;
         private Spelling s;
         private int mispellings;
         private Dictionary<string, List<string>> WrongWords = new Dictionary<string,List<string>>();
+        DataTable dt;
         private string currentfilename;
+        private string DictionaryPath = null;
 
         public MainForm()
         {
@@ -39,16 +42,16 @@ namespace BulkSpell
             this.components = new System.ComponentModel.Container();
 
             this.s = new NetSpell.SpellChecker.Spelling(this.components);
+            
+            s.Dictionary = dict;
 
-            this.s.MisspelledWord +=
-                new NetSpell.SpellChecker.Spelling.MisspelledWordEventHandler(
-                                            this.spelling_Mispelled);
+            this.s.MisspelledWord += new NetSpell.SpellChecker.Spelling.MisspelledWordEventHandler(this.spelling_Mispelled);
 
             folderBrowserDialog1.ShowDialog();
 
             textBox1.Text = folderBrowserDialog1.SelectedPath;
 
-            DataTable dt = new DataTable();
+            dt = new DataTable();
             dt.Columns.AddRange(new DataColumn[3] { new DataColumn("Id"), new DataColumn("Name"), new DataColumn("Errors") });
 
             // check if files exist or are in use
@@ -93,7 +96,6 @@ namespace BulkSpell
                 }
                 else
                 {
-
                     if (mime == "application/octet-stream")
                     {
                         bool isbinary = FileTypeCheck.IsBinary(buffer);
@@ -164,6 +166,24 @@ namespace BulkSpell
         {
             ReverseErrorsForm r = new ReverseErrorsForm(WrongWords);
             r.Show();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.FileName = string.Empty;
+            openFileDialog1.ShowDialog();
+            textBox2.Text = openFileDialog1.FileName;
+            DictionaryPath = textBox2.Text;
+
+            dict = new NetSpell.SpellChecker.Dictionary.WordDictionary();
+            dict.DictionaryFile = DictionaryPath;
+            dict.Initialize();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.ShowDialog();
+            Util.SaveDataTableToPipeDelimitedTextFile(saveFileDialog1.FileName, dt);
         }
 
     }

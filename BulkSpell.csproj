@@ -69,6 +69,7 @@
     <Compile Include="src\ReverseErrorsForm.Designer.cs">
       <DependentUpon>ReverseErrorsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Util.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
