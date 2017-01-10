@@ -35,9 +35,12 @@
     <ApplicationIcon>Bulkspell.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NetSpell.SpellChecker, Version=2.1.7.32111, Culture=neutral, PublicKeyToken=318b389f0db66e46, processorArchitecture=MSIL">
+    <Reference Include="itextsharp">
+      <HintPath>packages\iTextSharp.5.5.10\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="NetSpell.SpellChecker, Version=2.1.7.41329, Culture=neutral, PublicKeyToken=318b389f0db66e46">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\NetSpell.SpellChecker.dll</HintPath>
+      <HintPath>packages\NetSpell.2.1.7\lib\NetSpell.SpellChecker.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -80,6 +83,7 @@
     <EmbeddedResource Include="src\ReverseErrorsForm.resx">
       <DependentUpon>ReverseErrorsForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
