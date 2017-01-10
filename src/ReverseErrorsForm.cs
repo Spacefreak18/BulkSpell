@@ -53,7 +53,7 @@ namespace BulkSpell
                     bool firstCol = true;
                     foreach (DataColumn col in dt.Columns)
                     {
-                        if (!firstCol) sw.Write(", ");
+                        if (!firstCol) sw.Write("|");
                         sw.Write(row[col].ToString());
                         firstCol = false;
                     }
