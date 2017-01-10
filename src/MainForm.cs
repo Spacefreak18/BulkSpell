@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NetSpell.SpellChecker;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.parser;
 
 namespace BulkSpell
 {
@@ -30,6 +32,10 @@ namespace BulkSpell
 
         private void button1_Click(object sender, EventArgs e)
         {
+            currentfilename = string.Empty;
+            mispellings = 0;
+            WrongWords.Clear();
+
             this.components = new System.ComponentModel.Container();
 
             this.s = new NetSpell.SpellChecker.Spelling(this.components);
@@ -45,8 +51,8 @@ namespace BulkSpell
             DataTable dt = new DataTable();
             dt.Columns.AddRange(new DataColumn[3] { new DataColumn("Id"), new DataColumn("Name"), new DataColumn("Errors") });
 
+            // check if files exist or are in use
             System.IO.FileInfo[] filesList = null;
-
             System.IO.DirectoryInfo directory;
             directory = new System.IO.DirectoryInfo(textBox1.Text);
             filesList = directory.GetFiles();
@@ -57,17 +63,65 @@ namespace BulkSpell
             {
                 currentfilename = file.Name;
 
-                using (var streamReader = new System.IO.StreamReader(file.FullName, Encoding.UTF8))
+                // should use a more reliable way to detect file type
+                string mime;
+                byte[] buffer = new byte[256];
+                using (System.IO.FileStream fs = new System.IO.FileStream(file.FullName, System.IO.FileMode.Open))
                 {
-                    text = streamReader.ReadToEnd();
+                    if (fs.Length >= 256)
+                        fs.Read(buffer, 0, 256);
+                    else
+                        fs.Read(buffer, 0, (int)fs.Length);
                 }
+
+                mime = FileTypeCheck.GetMimeType(buffer, file.FullName);
+                if (mime == "application/pdf")
+                {
+                    StringBuilder pdftext = new StringBuilder();
+                    PdfReader pdfReader = new PdfReader(file.FullName);
+
+                    for (int page = 1; page <= pdfReader.NumberOfPages; page++)
+                    {
+                        ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
+                        string currentText = PdfTextExtractor.GetTextFromPage(pdfReader, page, strategy);
+
+                        currentText = Encoding.UTF8.GetString(ASCIIEncoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(currentText)));
+                        pdftext.Append(currentText);
+                    }
+                    pdfReader.Close();
+                    text = pdftext.ToString();
+                }
+                else
+                {
+
+                    if (mime == "application/octet-stream")
+                    {
+                        bool isbinary = FileTypeCheck.IsBinary(buffer);
+
+                        if (isbinary == false)
+                        {
+                            using (var streamReader = new System.IO.StreamReader(file.FullName, Encoding.UTF8))
+                            {
+                                text = streamReader.ReadToEnd();
+                            }
+                        }
+                        else
+                            text = string.Empty;
+                    }
+                    else
+                        text = string.Empty;               
+                }
+                
+                
                 s.Text = text;
                 s.ShowDialog = false;
 
                 mispellings = 0;
-                while (s.WordIndex + 1 < s.WordCount)
+                s.WordIndex = -1;
+                while (s.WordIndex < s.WordCount - 1)
                 {
                     s.SpellCheck(s.WordIndex + 1);
+                    s.WordIndex = s.WordIndex + 1;
                 }
                 
 
