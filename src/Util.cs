@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.parser;
 
 namespace BulkSpell
 {
@@ -25,6 +27,23 @@ namespace BulkSpell
                     sw.WriteLine();
                 }
             }
+        }
+
+        public static string ConvertPdftoText(string PdfFileName)
+        {
+            StringBuilder pdftext = new StringBuilder();
+            PdfReader pdfReader = new PdfReader(PdfFileName);
+
+            for (int page = 1; page <= pdfReader.NumberOfPages; page++)
+            {
+                ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
+                string currentText = PdfTextExtractor.GetTextFromPage(pdfReader, page, strategy);
+
+                currentText = Encoding.UTF8.GetString(ASCIIEncoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(currentText)));
+                pdftext.Append(currentText);
+            }
+            pdfReader.Close();
+            return pdftext.ToString();
         }
     }
 }
