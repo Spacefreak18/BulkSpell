@@ -1,4 +1,4 @@
-# Bulkspell #
+# BulkSpell #
 C# dot net application to analyze spell check results from multiple documents of various types.
 
 ## Nuget Libraries Used ##
