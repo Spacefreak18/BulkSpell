@@ -12,22 +12,21 @@ namespace BulkSpell
 {
     public partial class ReverseErrorsForm : Form
     {
-        DataTable dt;
-        private Dictionary<string, List<string>> WrongWords;// = new Dictionary<string, List<string>>();
-        public ReverseErrorsForm(Dictionary<string, List<string>> t)
+        DataTable WrongWords;
+        private Dictionary<string, List<string>> Misspellings;
+        public ReverseErrorsForm(Dictionary<string, List<string>> misspelled_words)
         {
             InitializeComponent();
-            WrongWords = t;
+            Misspellings = misspelled_words;
         }
 
         private void ReverseErrorsForm_Load(object sender, EventArgs e)
         {          
-            dt = new DataTable();
-            dt.Columns.AddRange(new DataColumn[3] { new DataColumn("Word"), new DataColumn("Occurances"), new DataColumn("Files") });
+            WrongWords = new DataTable();
+            WrongWords.Columns.AddRange(new DataColumn[3] { new DataColumn("Word"), new DataColumn("Occurances"), new DataColumn("Files") });
 
-            foreach (KeyValuePair<string, List<string>> element in WrongWords)
+            foreach (KeyValuePair<string, List<string>> element in Misspellings)
             {
-
                 string files = "";
                 foreach (string b in element.Value)
                 {
@@ -35,9 +34,9 @@ namespace BulkSpell
                 }
                 files = files.Remove(files.Length - 2);
 
-                dt.Rows.Add(element.Key, element.Value.Count, files);
+                WrongWords.Rows.Add(element.Key, element.Value.Count, files);
             }
-            dataGridView1.DataSource = dt;
+            dataGridView1.DataSource = WrongWords;
             dataGridView1.Columns[2].Width = 200;
         }
 
@@ -56,7 +55,7 @@ namespace BulkSpell
         private void ExportPivotResults()
         {
             saveFileDialog1.ShowDialog();
-            Util.SaveDataTableToPipeDelimitedTextFile(saveFileDialog1.FileName, dt);
+            Util.SaveDataTableToPipeDelimitedTextFile(saveFileDialog1.FileName, WrongWords);
         }
     }
 }
