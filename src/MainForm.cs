@@ -14,6 +14,7 @@ namespace BulkSpell
     {
         private BulkSpell BulkSpellChecker;
         private string DictionaryPath = null;
+        private string SpellCheckPath = null;
 
         public MainForm()
         {
@@ -25,14 +26,18 @@ namespace BulkSpell
             label2.ForeColor = Color.Green;
             label3.ForeColor = Color.Green;
 
+            SpellCheckPath = Properties.Settings.Default.SavedSpellCheckPath;
+            textBox1.Text = SpellCheckPath;
             DictionaryPath = Properties.Settings.Default.SavedWordDictionary;
             textBox2.Text = DictionaryPath;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            string tempCheckFolder = string.Empty;
+
             folderBrowserDialog1.ShowDialog();
-            textBox1.Text = folderBrowserDialog1.SelectedPath;
+            tempCheckFolder = folderBrowserDialog1.SelectedPath;
 
             label3.ForeColor = Color.Red;
             label3.Text = "Running...";
@@ -40,15 +45,19 @@ namespace BulkSpell
 
             try
             {
-                runBulkSpellCheck(textBox1.Text);
+                runBulkSpellCheck(tempCheckFolder);
             }
             catch(Exception ex)
             {
+                textBox1.Text = tempCheckFolder;
                 MessageBox.Show(ex.Message);
             }
 
             label3.ForeColor = Color.Green;
             label3.Text = "Ready";
+            textBox1.Text = SpellCheckPath;
+            Properties.Settings.Default.SavedSpellCheckPath = SpellCheckPath;
+            Properties.Settings.Default.Save();
             textBox2.Text = DictionaryPath;
         }
 
@@ -77,7 +86,7 @@ namespace BulkSpell
         {
             try
             {
-                LoadDictionary();
+                LoadDictionaryWithDialog();
             }
             catch (Exception ex)
             {
@@ -88,18 +97,26 @@ namespace BulkSpell
             Properties.Settings.Default.Save();
         }
 
-        private void LoadDictionary()
+        private void LoadDictionaryWithDialog()
         {
             openFileDialog1.FileName = string.Empty;
             openFileDialog1.ShowDialog();
             textBox2.Text = openFileDialog1.FileName;
-            DictionaryPath = textBox2.Text;
 
-            if (System.IO.File.Exists(DictionaryPath) == false)
+            LoadDictionary();
+        }
+
+        private void LoadDictionary()
+        {
+            string tempDictionaryPath = string.Empty;
+
+            tempDictionaryPath = textBox2.Text;
+            if (System.IO.File.Exists(tempDictionaryPath) == false)
             {
-                DictionaryPath = null;
-                throw new Exception();
+                tempDictionaryPath = null;
+                throw new Exception("The dictionary file you are attempting to use does not exist.");
             }
+            DictionaryPath = tempDictionaryPath;
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -126,41 +143,52 @@ namespace BulkSpell
         private void runBulkSpellCheck(string FolderwithFilestoCheck)
         {
             if (System.IO.Directory.Exists(FolderwithFilestoCheck) == false)
-                throw new Exception("You have not specified a path of files to spell check.");
+            {
+                textBox1.Text = SpellCheckPath;
+                throw new Exception("You have not specified a path of files to spell check which exists.");
+            }
+            SpellCheckPath = FolderwithFilestoCheck;
 
             // add another check if it actually is a dictionary file?
+            LoadDictionary();
             if (DictionaryPath == null)
-            {
                 throw new Exception("You have not loaded a dictionary to perform the spell check with.");
-            }
 
             BulkSpellChecker = new BulkSpell(DictionaryPath);
-            BulkSpellChecker.SpellCheck(FolderwithFilestoCheck);
+            BulkSpellChecker.SpellCheck(SpellCheckPath);
 
             dataGridView1.DataSource = BulkSpellChecker.WrongWords;
             label2.Text = BulkSpellChecker.Misspellings.Count.ToString();
 
             if (BulkSpellChecker.Misspellings.Count > 0)
-            {
                 label2.ForeColor = Color.Red;
-            }
             else
-            {
                 label2.ForeColor = Color.Green;
-            }
-
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
+            string tempCheckFolder = textBox1.Text;
+
+            label3.ForeColor = Color.Red;
+            label3.Text = "Running...";
+            label3.Update();
+
             try
             {
-                runBulkSpellCheck(textBox1.Text);
+                runBulkSpellCheck(tempCheckFolder);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+
+            label3.ForeColor = Color.Green;
+            label3.Text = "Ready";
+            textBox1.Text = SpellCheckPath;
+            textBox2.Text = DictionaryPath;
+            Properties.Settings.Default.SavedSpellCheckPath = SpellCheckPath;
+            Properties.Settings.Default.Save();
         }
 
     }
