@@ -24,6 +24,9 @@ namespace BulkSpell
         {
             label2.ForeColor = Color.Green;
             label3.ForeColor = Color.Green;
+
+            DictionaryPath = Properties.Settings.Default.SavedWordDictionary;
+            textBox2.Text = DictionaryPath;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -46,6 +49,7 @@ namespace BulkSpell
 
             label3.ForeColor = Color.Green;
             label3.Text = "Ready";
+            textBox2.Text = DictionaryPath;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -79,6 +83,9 @@ namespace BulkSpell
             {
                 MessageBox.Show(ex.Message);
             }
+
+            Properties.Settings.Default.SavedWordDictionary = DictionaryPath;
+            Properties.Settings.Default.Save();
         }
 
         private void LoadDictionary()
