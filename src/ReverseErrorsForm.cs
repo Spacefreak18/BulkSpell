@@ -21,8 +21,7 @@ namespace BulkSpell
         }
 
         private void ReverseErrorsForm_Load(object sender, EventArgs e)
-        {
-            
+        {          
             dt = new DataTable();
             dt.Columns.AddRange(new DataColumn[3] { new DataColumn("Word"), new DataColumn("Occurances"), new DataColumn("Files") });
 
@@ -44,8 +43,19 @@ namespace BulkSpell
 
         private void button1_Click(object sender, EventArgs e)
         {
-            saveFileDialog1.ShowDialog();
+            try
+            {
+                ExportPivotResults();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
+        private void ExportPivotResults()
+        {
+            saveFileDialog1.ShowDialog();
             Util.SaveDataTableToPipeDelimitedTextFile(saveFileDialog1.FileName, dt);
         }
     }
