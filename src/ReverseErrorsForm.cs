@@ -37,7 +37,9 @@ namespace BulkSpell
                 WrongWords.Rows.Add(element.Key, element.Value.Count, files);
             }
             dataGridView1.DataSource = WrongWords;
-            dataGridView1.Columns[2].Width = 200;
+            dataGridView1.AutoResizeColumns();
+            dataGridView1.Sort(this.dataGridView1.Columns["Occurances"], ListSortDirection.Descending);
+            //dataGridView1.Columns[2].Width = 200;
         }
 
         private void button1_Click(object sender, EventArgs e)

@@ -158,6 +158,7 @@ namespace BulkSpell
             BulkSpellChecker.SpellCheck(SpellCheckPath);
 
             dataGridView1.DataSource = BulkSpellChecker.WrongWords;
+            dataGridView1.AutoResizeColumns();
             label2.Text = BulkSpellChecker.Misspellings.Count.ToString();
 
             if (BulkSpellChecker.Misspellings.Count > 0)
