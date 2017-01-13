@@ -44,6 +44,15 @@ namespace BulkSpell
             try
             {
                 await Task.Run(() => runBulkSpellCheck(tempCheckFolder));
+
+                dataGridView1.DataSource = BulkSpellChecker.WrongWords;
+                dataGridView1.AutoResizeColumns();
+                label2.Text = BulkSpellChecker.Misspellings.Count.ToString();
+
+                if (BulkSpellChecker.Misspellings.Count > 0)
+                    label2.ForeColor = Color.Red;
+                else
+                    label2.ForeColor = Color.Green;
             }
             catch(Exception ex)
             {
@@ -161,6 +170,15 @@ namespace BulkSpell
             try
             {
                 await Task.Run(() => runBulkSpellCheck(tempCheckFolder));
+
+                dataGridView1.DataSource = BulkSpellChecker.WrongWords;
+                dataGridView1.AutoResizeColumns();
+                label2.Text = BulkSpellChecker.Misspellings.Count.ToString();
+
+                if (BulkSpellChecker.Misspellings.Count > 0)
+                    label2.ForeColor = Color.Red;
+                else
+                    label2.ForeColor = Color.Green;
             }
             catch (Exception ex)
             {
@@ -190,10 +208,6 @@ namespace BulkSpell
 
         private void UpdateUIWithSpellCheckResults()
         {
-            dataGridView1.DataSource = BulkSpellChecker.WrongWords;
-            dataGridView1.AutoResizeColumns();
-            label2.Text = BulkSpellChecker.Misspellings.Count.ToString();
-
             SetFields(true);
             label3.ForeColor = Color.Green;
             label3.Text = "Ready";
@@ -201,11 +215,6 @@ namespace BulkSpell
             Properties.Settings.Default.SavedSpellCheckPath = SpellCheckPath;
             Properties.Settings.Default.Save();
             textBox2.Text = DictionaryPath;
-
-            if (BulkSpellChecker.Misspellings.Count > 0)
-                label2.ForeColor = Color.Red;
-            else
-                label2.ForeColor = Color.Green;
         }
 
         private void SetFields(bool State)
