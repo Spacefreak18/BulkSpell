@@ -1,5 +1,7 @@
 # BulkSpell #
-C# dot net application to analyze spell check results from multiple documents of various types.
+https://github.com/ZitZ/BulkSpell
+
+C# dot net application to analyze spell check results from multiple documents of various types, with user-selectable customized dictionaries. Simply point to a directory, select a dictionary, and await your results. BulkSpell also provides a list of unique misspellings for the files selected by clicking "Reverse List".
 
 ## Nuget Libraries Used ##
 
