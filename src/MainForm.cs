@@ -32,20 +32,18 @@ namespace BulkSpell
             textBox2.Text = DictionaryPath;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             string tempCheckFolder = string.Empty;
 
             folderBrowserDialog1.ShowDialog();
             tempCheckFolder = folderBrowserDialog1.SelectedPath;
 
-            label3.ForeColor = Color.Red;
-            label3.Text = "Running...";
-            label3.Update();
+            PrepareUIForSpellCheckRun();
 
             try
             {
-                runBulkSpellCheck(tempCheckFolder);
+                await Task.Run(() => runBulkSpellCheck(tempCheckFolder));
             }
             catch(Exception ex)
             {
@@ -53,12 +51,8 @@ namespace BulkSpell
                 MessageBox.Show(ex.Message);
             }
 
-            label3.ForeColor = Color.Green;
-            label3.Text = "Ready";
-            textBox1.Text = SpellCheckPath;
-            Properties.Settings.Default.SavedSpellCheckPath = SpellCheckPath;
-            Properties.Settings.Default.Save();
-            textBox2.Text = DictionaryPath;
+            UpdateUIWithSpellCheckResults();
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -156,10 +150,57 @@ namespace BulkSpell
 
             BulkSpellChecker = new BulkSpell(DictionaryPath);
             BulkSpellChecker.SpellCheck(SpellCheckPath);
+        } 
 
+        private async void button5_Click(object sender, EventArgs e)
+        {
+            string tempCheckFolder = textBox1.Text;
+
+            PrepareUIForSpellCheckRun();
+
+            try
+            {
+                await Task.Run(() => runBulkSpellCheck(tempCheckFolder));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            UpdateUIWithSpellCheckResults();
+            SetFields(true);
+            label3.ForeColor = Color.Green;
+            label3.Text = "Ready";
+            textBox1.Text = SpellCheckPath;
+            textBox2.Text = DictionaryPath;
+            Properties.Settings.Default.SavedSpellCheckPath = SpellCheckPath;
+            Properties.Settings.Default.Save();
+        }
+
+        private void PrepareUIForSpellCheckRun()
+        {
+            dataGridView1.DataSource = null;
+            label2.ForeColor = Color.Green;
+            label2.Text = "0";
+            label3.ForeColor = Color.Red;
+            label3.Text = "Running...";
+            label3.Update();
+            SetFields(false);
+        }
+
+        private void UpdateUIWithSpellCheckResults()
+        {
             dataGridView1.DataSource = BulkSpellChecker.WrongWords;
             dataGridView1.AutoResizeColumns();
             label2.Text = BulkSpellChecker.Misspellings.Count.ToString();
+
+            SetFields(true);
+            label3.ForeColor = Color.Green;
+            label3.Text = "Ready";
+            textBox1.Text = SpellCheckPath;
+            Properties.Settings.Default.SavedSpellCheckPath = SpellCheckPath;
+            Properties.Settings.Default.Save();
+            textBox2.Text = DictionaryPath;
 
             if (BulkSpellChecker.Misspellings.Count > 0)
                 label2.ForeColor = Color.Red;
@@ -167,29 +208,18 @@ namespace BulkSpell
                 label2.ForeColor = Color.Green;
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void SetFields(bool State)
         {
-            string tempCheckFolder = textBox1.Text;
+            dataGridView1.Enabled = State;
 
-            label3.ForeColor = Color.Red;
-            label3.Text = "Running...";
-            label3.Update();
+            textBox1.Enabled = State;
+            textBox2.Enabled = State;
 
-            try
-            {
-                runBulkSpellCheck(tempCheckFolder);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-            label3.ForeColor = Color.Green;
-            label3.Text = "Ready";
-            textBox1.Text = SpellCheckPath;
-            textBox2.Text = DictionaryPath;
-            Properties.Settings.Default.SavedSpellCheckPath = SpellCheckPath;
-            Properties.Settings.Default.Save();
+            button1.Enabled = State;
+            button2.Enabled = State;
+            button3.Enabled = State;
+            button4.Enabled = State;
+            button5.Enabled = State;
         }
 
     }
