@@ -56,6 +56,8 @@ namespace BulkSpell
 
         private void ExportPivotResults()
         {
+            saveFileDialog1.FileName = "Mispellings";
+            saveFileDialog1.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
             saveFileDialog1.ShowDialog();
             Util.SaveDataTableToPipeDelimitedTextFile(saveFileDialog1.FileName, WrongWords);
         }

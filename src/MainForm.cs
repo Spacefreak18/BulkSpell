@@ -139,6 +139,8 @@ namespace BulkSpell
             if (BulkSpellChecker == null)
                 throw new Exception("You have not run any spell checks yet. There's nothing to export.");
 
+            saveFileDialog1.FileName = "FileResults";
+            saveFileDialog1.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
             saveFileDialog1.ShowDialog();
             Util.SaveDataTableToPipeDelimitedTextFile(saveFileDialog1.FileName, BulkSpellChecker.WrongWords);
         }
