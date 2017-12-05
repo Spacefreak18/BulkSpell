@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("BulkSpell")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("iPipeline")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BulkSpell")]
-[assembly: AssemblyCopyright("Copyright © iPipeline 2017")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
